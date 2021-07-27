@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+  <body>
+  <br><strong> В городе Гродно: </strong>
+  <META HTTP-EQUIV="refresh" CONTENT="10">
+    <br>
+    <br> Условия: {{ current_weather['weather'][0]['description'] }}
+    <br> Температура: {{ current_weather['main']['temp'] }}
+    <br> Минимальная температура: {{ current_weather['main']['temp_min'] }}
+    <br> Максимальная температура: {{ current_weather['main']['temp_max'] }}
+    <br> Влажность: {{ current_weather['main']['humidity'] }} %
+    <br>
+  <br><strong> Прогноз на пять дней </strong>
+    {% for line in forecast %}
+    <br>{{ line }}
+    {% endfor %}
+  </body>
+</html>

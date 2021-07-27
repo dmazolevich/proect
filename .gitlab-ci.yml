@@ -1,0 +1,32 @@
+image: docker:19.03.0
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
+
+services:
+  - docker:19.03.0-dind
+
+before_script:
+  - docker info
+
+
+build:
+  stage: build
+  script:
+    - docker build -t prognoz .
+    - docker tag prognoz:latest ser3:5000/prognoz
+    - docker push ser3:5000/prognoz
+   
+
+deploy:
+  stage: deploy
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apk update && apk add --no-cache openssh-client)'
+    - eval $(ssh-agent -s)
+    - echo -n "$SSH_PRIVATE_KEY" | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - ssh mazik3@ser3 "cd /home/mazik3/test/test/; docker-compose stop; docker-compose up -d"
